@@ -2,12 +2,12 @@ import { REGISTER, LOGIN, LOGOUT} from "../constants/actionTypes";
 
 const initialState = {
     isAuth: false,
+    isAdmin: false,
     user: {}
 }
 
 const authReducer = (state = initialState, action) => {
-    const {type, payload} = action;
-    console.log("payload", payload);
+    const {type, payload, role} = action;
     switch(type) {
         case REGISTER:{
             return {
@@ -17,12 +17,14 @@ const authReducer = (state = initialState, action) => {
         case LOGIN: {
             return {
                 isAuth: true,
+                isAdmin: role,
                 user: payload
             }
         }
         case LOGOUT: {
             return {
-                isAuth: false
+                isAuth: false,
+                isAdmin: false
             }
         }
         default:

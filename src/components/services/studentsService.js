@@ -7,17 +7,17 @@ class studentsService {
     delete(id) {
         return http.delete(`api/account/delete/${id}`);
     }
-    // edit(id) {
-    //     return http.get(`api/users/edit/${id}`);
-    // }
-    // save(data) {
-    //     return http.put("api/users/save", data,
-    //     {
-    //         headers: {
-    //             'Content-Type': 'multipart/form-data'
-    //         }
-    //     });
-    // }
+    edit(id) {
+        return http.get(`api/account/editstudent/${id}`);
+    }
+    save(data) {
+        return http.put("api/account/savestudent", data,
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+    }
 }
 
 export default new studentsService();

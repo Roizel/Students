@@ -1,6 +1,7 @@
 import {applyMiddleware, combineReducers, createStore, compose} from "redux"; /*Just need*/
 import thunk from "redux-thunk";
 import authReducer from "./reducers/authReducer";
+import courseReducer from "./reducers/courseReducer";
 import studentReducer from "./reducers/studentReducer";
 
 const middleware = [
@@ -9,7 +10,8 @@ const middleware = [
 
 const rootReducer = combineReducers({
    auth: authReducer,
-   students: studentReducer
+   students: studentReducer,
+   courses: courseReducer
 });
 
  // In development, use the browser's Redux dev tools extension if installed

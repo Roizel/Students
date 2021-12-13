@@ -1,33 +1,39 @@
-import { USERS_ALL, USERS_DELETED, USERS_EDIT, USERS_EDIT_SAVE} from "../constants/actionTypes";
+import { COURSE_ALL, DELETE_COURSE, CREATE_COURSE, EDIT_COURSE, EDIT_SAVE_COURSE} from "../constants/actionTypes";
 
-const initialState = {
+const initialState = { /*Our state in reducer*/
     list: [],
-    editedStudent: {}
+    editedCourse: {}
 }
 
-const studentReducer = (state = initialState, action) => {
+const courseReducer = (state = initialState, action) => {
     const { type, payload } = action;
     console.log("payload", payload);
     switch (type) {
-        case USERS_ALL: {
+        case COURSE_ALL: {
             return {
                 ...state,
                 list: payload
             }
         }
-        case USERS_DELETED: {
+        case CREATE_COURSE: {
+            return {
+                ...state,
+                list: payload
+            }
+        }
+        case DELETE_COURSE: {
             return {
                 ...state,
                 list: state.list.filter(item => item.id !== payload)
             };
         }
-        case USERS_EDIT: {
+        case EDIT_COURSE: {
             return {
                 ...state,
                 editedStudent: payload
             }
         }
-        case USERS_EDIT_SAVE: {
+        case EDIT_SAVE_COURSE: {
             return {
                 ...state
             }
@@ -37,4 +43,4 @@ const studentReducer = (state = initialState, action) => {
             return state;
     }
 }
-export default studentReducer
+export default courseReducer

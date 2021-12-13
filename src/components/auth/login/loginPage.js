@@ -6,12 +6,14 @@ import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { LoginUser } from '../../actions/auth';
 
-const LoginPage = () => { /*Тут буде наш стейт*/
+const LoginPage = () => {
 
     const initState = {
         email: '',
         password: '',
     };
+    const formikRef = useRef();
+    const titleRef = useRef();
     const dispatch = useDispatch();
     const [invalid, setInvalid] = useState([]);
     const history = useNavigate();
@@ -25,22 +27,27 @@ const LoginPage = () => { /*Тут буде наш стейт*/
                history("/");
            })
            .catch(ex => {
-               console.log(ex);
-               setInvalid(ex.errors);
+            const { errors } = ex;
+            Object.entries(errors).forEach(([key, values]) => {
+                let message = '';
+                values.forEach(text => message += text + " ");
+                formikRef.current.setFieldError(key, message);
+            });
+            setInvalid(errors.invalid);
+            titleRef.current.scrollIntoView({ behavior: 'smooth' })
            })
     };
     return (
         <div className="row">
-            <h1 className="text-center">Вхід</h1>
+            <h1 ref={titleRef} className="text-center">Login</h1>
             {
-                invalid && invalid.length > 0 &&                          
+                invalid && invalid.length > 0 &&
                 <div className="alert alert-danger">
                     <ul>
                         {
                             invalid.map((text, index) => {
                                 return (
                                     <li key={index}>{text}</li>
-
                                 );
                             })
                         }
@@ -49,6 +56,7 @@ const LoginPage = () => { /*Тут буде наш стейт*/
             }
             <div className="offset-md-3 col-md-6">
             <Formik 
+                innerRef={formikRef}
                 initialValues = {initState} 
                 onSubmit={onSubmitHandler}
                 validationSchema= {validatonFields()}>

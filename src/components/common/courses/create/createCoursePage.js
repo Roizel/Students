@@ -1,23 +1,19 @@
 import React, { useRef, useState } from 'react'
 import validatonFields from './validation';
 import { Formik, Form } from 'formik';
-import MyTextInput from "../../common/inputs/inputText";
-import MyPhotoInput from '../../common/inputs/photoInput';
+import MyTextInput from '../../inputs/inputText';
+import MyPhotoInput from '../../inputs/photoInput';
 import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
-import { RegisterUser } from '../../actions/auth';
-
-const RegisterPage = () => {
+import { CreateCourse } from '../../../actions/course';
+const CreateCoursePage = () => {
 
     const initState = {
         name: '',
-        surname: '',
-        email: '',
-        age: '',
+        description: '',
+        duration: '',
+        startcourse: '',
         photo: null,
-        phone: '',
-        password: '',
-        confirmPassword: ''
     };
 
     const formikRef = useRef();
@@ -30,12 +26,13 @@ const RegisterPage = () => {
         const formData = new FormData();
         Object.entries(values).forEach(([key, value]) => formData.append(key, value));
         console.log("Нажалось");
-        dispatch(RegisterUser(formData))
+        dispatch(CreateCourse(formData))
             .then(result => {
-                history("/");
+                history("/courses");
                 console.log("Ok");
             })
             .catch(ex => {
+                console.log(ex);
                 const { errors } = ex;
                 Object.entries(errors).forEach(([key, values]) => {
                     let message = '';
@@ -46,10 +43,10 @@ const RegisterPage = () => {
                 titleRef.current.scrollIntoView({ behavior: 'smooth' })
             });
     }
-
     return (
         <div className="row">
-           <h1 ref={titleRef} className="text-center">Registration</h1>
+          
+          <h1 ref={titleRef} className="text-center">Create Course</h1>
             {
                 invalid && invalid.length > 0 &&
                 <div className="alert alert-danger">
@@ -80,35 +77,27 @@ const RegisterPage = () => {
                         />
 
                         <MyTextInput
-                            label="Surname"
-                            name="surname"
+                            label="Description"
+                            name="description"
                             type="text"
-                            id="surname"
-                            placeH="Write your surname"
+                            id="description"
+                            placeH="Write description of course"
                         />
 
                         <MyTextInput
-                            label="Електрона пошта"
-                            name="email"
-                            type="Email"
-                            id="email"
-                            placeH="Write your Email"
+                            label="Duration"
+                            name="duration"
+                            type="text"
+                            id="duration"
+                            placeH="Write duration of course"
                         />
 
                         <MyTextInput
-                            label="Phone"
-                            name="phone"
+                            label="Startcourse"
+                            name="startcourse"
                             type="text"
-                            id="phone"
-                            placeH="Write your phone"
-                        />
-
-                        <MyTextInput
-                            label="Age"
-                            name="age"
-                            type="text"
-                            id="age"
-                            placeH="Write your age"
+                            id="startcourse"
+                            placeH="Write the start date of the course"
                         />
                                                 
                         <MyPhotoInput
@@ -118,22 +107,7 @@ const RegisterPage = () => {
                             formikRef={formikRef}
                         />
                         
-                         <MyTextInput
-                            label="Пароль"
-                            name="password"
-                            type="password"
-                            id="password"
-                            placeH="Write your password"
-                        />
-
-                        <MyTextInput
-                            label="Повторіть пароль"
-                            name="confirmPassword"
-                            type="password"
-                            id="confirmPassword"
-                            placeH="Confirm password"
-                        />
-                        <button type="submit" className="btn btn-dark">Реєстрація</button>
+                        <button type="submit" className="btn btn-dark">Create New Course</button>
                     </Form>
                 </Formik>
             </div>
@@ -141,4 +115,4 @@ const RegisterPage = () => {
     )
 }
 
-export default RegisterPage;
+export default CreateCoursePage;
