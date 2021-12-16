@@ -2,17 +2,31 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { CourseAll, CourseDelete, CreateCourse } from '../../actions/course';
+import { Table, Tag, Space } from 'antd';
+import 'antd/dist/antd.css';
+import EclipseWidget from '../eclipse/index';
 
 const CoursePage = () => {
     const dispatch = useDispatch();
     const { list } = useSelector(state => state.courses);
+    const [loading, setLoading] = useState(true);
+
+    const columns = [
+        { title: 'Id',           dataIndex: 'id',           key: 'id',},
+        { title: 'Name',         dataIndex: 'name',         key: 'name',     render: text => <a>{text}</a>, },
+        { title: 'Description',  dataIndex: 'description',  key: 'description',  render: text => <a>{text}</a>,},
+        { title: 'Duration',     dataIndex: 'duration',     key: 'duration',},
+        { title: 'Photo',        dataIndex: 'photo',        key: 'photo',    render: text => <img src={"https://localhost:44315"+text} alt="Самогон" width="100" />, },
+        { title: 'Delete',       dataIndex: '',             key: 'delete',   render: id => <button type="button" onClick={() => onDeleteClick(id.id)} className="btn btn-danger">Delete</button>,},
+        { title: 'Edit',         dataIndex: '',             key: 'edit',   render: id => <Link className="btn btn-warning" to={`/student/edit/${id.id}`}>Edit</Link>,},
+    ]
 
     useEffect(() => {
         try
         {
             dispatch(CourseAll())
-            .then()
-            .catch()
+            .then(res => {setLoading(false)})
+            .catch(res => {setLoading(false)})
         }
         catch (error) {
             console.log("Server error global");
@@ -23,51 +37,20 @@ const CoursePage = () => {
         try 
         {
             dispatch(CourseDelete(id))
-            .then()
-            .catch();
+            .then(res => {setLoading(false)})
+            .catch(res => {setLoading(false)});
         } 
         catch (error) 
         {
 
         }
     }
+    console.log(list)
     return (
         <div className="row">
+            {loading && <EclipseWidget/>}
             <Link className="btn btn-dark mt-4 mb-4" to={`/createCourse`}>Add Course</Link>
-            <table className="table table-dark table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Description</th>
-                        <th scope="col">Duration</th>
-                        <th scope="col">StartCourse</th>
-                        <th scope="col">Image</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {
-                        list.map((course, index) => {
-                            return (
-                                <tr key={index}>
-                                    <td>{course.id}</td>
-                                    <td>{course.name}</td>
-                                    <td><p className="text-break">{course.description}</p></td>
-                                    <td>{course.duration}</td>
-                                    <td>{course.startcourse}</td>
-                                    <td>
-                                        <img src={"https://localhost:44315" + course.photo} alt="Самогон" width="150" />
-                                    </td>
-                                    <td>
-                                        <button type="button" onClick={() => onDeleteClick(course.id)} className="btn btn-danger">Delete</button>
-                                        <Link className="btn btn-dark" to={`/course/edit/${course.id}`}>Edit</Link>
-                                    </td>
-                                </tr>
-                            );
-                        })
-                    }
-                </tbody>
-            </table>
+            <Table columns={columns} dataSource={list} />
         </div>
     );
 }

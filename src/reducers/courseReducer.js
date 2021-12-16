@@ -1,8 +1,10 @@
-import { COURSE_ALL, DELETE_COURSE, CREATE_COURSE, EDIT_COURSE, EDIT_SAVE_COURSE} from "../constants/actionTypes";
+import { COURSE_ALL, DELETE_COURSE, CREATE_COURSE, 
+    EDIT_COURSE, EDIT_SAVE_COURSE, GET_STUDENT_COURSE, UNSUBSCRIBE} from "../constants/actionTypes";
 
-const initialState = { /*Our state in reducer*/
+const initialState = {
     list: [],
-    editedCourse: {}
+    editedCourse: {},
+    courseStudent: [] /*course - student*/
 }
 
 const courseReducer = (state = initialState, action) => {
@@ -36,6 +38,17 @@ const courseReducer = (state = initialState, action) => {
         case EDIT_SAVE_COURSE: {
             return {
                 ...state
+            }
+        }
+        case GET_STUDENT_COURSE: {
+            return {
+                ...state,
+                courseStudent: payload
+            }
+        }
+        case UNSUBSCRIBE: {
+            return {
+                ...state,
             }
         }
 

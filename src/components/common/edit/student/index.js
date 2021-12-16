@@ -2,17 +2,33 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { StudentsAll, StudentDelete } from '../../../actions/students';
+import 'antd/dist/antd.css';
+import { Table, Tag, Space } from 'antd';
+import EclipseWidget from '../../eclipse/index';
 
 const StudentPage = () => {
     const dispatch = useDispatch();
     const {list} = useSelector(state => state.students);
+    const [loading, setLoading] = useState(true);
+
+    const columns = [
+        { title: 'Id',       dataIndex: 'id',       key: 'id',},
+        { title: 'Name',     dataIndex: 'name',     key: 'name',     render: text => <a>{text}</a>, },
+        { title: 'Surname',  dataIndex: 'surname',  key: 'surname',  render: text => <a>{text}</a>,},
+        { title: 'Email',    dataIndex: 'email',    key: 'email',},
+        { title: 'Phone',    dataIndex: 'phone',    key: 'phone',},
+        { title: 'Age',      dataIndex: 'age',      key: 'age',},
+        { title: 'Image',    dataIndex: 'photo',    key: 'photo',    render: text => <img src={"https://localhost:44315/images/"+text} alt="Самогон" width="100" />, },
+        { title: 'Delete',   dataIndex: '',         key: 'delete',   render: id => <button type="button" onClick={() => onDeleteClick(id.id)} className="btn btn-danger">Delete</button>,},
+        { title: 'Edit',     dataIndex: '',         key: 'edit',     render: id => <Link className="btn btn-warning" to={`/student/edit/${id.id}`}>Edit</Link>,},
+    ]
 
     useEffect(() => {
         try 
         {
             dispatch(StudentsAll())
-            .then()
-            .catch()
+            .then(res => {setLoading(false)})
+            .catch(res => {setLoading(false)})
         } 
         catch (error) {
             console.log("Server error global");
@@ -22,51 +38,16 @@ const StudentPage = () => {
     const onDeleteClick = (id) => {
         try {
           dispatch(StudentDelete(id))
-          .then()
-          .catch(); 
+          .then(res => {setLoading(false)})
+          .catch(res => {setLoading(false)}); 
         } catch (error) {
             
         }
     }
     return (
         <div className="row">
-            <h3 className="text-center">Edit Students</h3>
-            <table className="table table-dark table-borderless">
-                <thead>
-                    <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Surname</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Phone</th>
-                        <th scope="col">Age</th>
-                        <th scope="col">Image</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {
-                        list.map((student, index) => {
-                            return (
-                                <tr key={index}>
-                                    <td>{student.id}</td>
-                                    <td>{student.name}</td>
-                                    <td>{student.surname}</td>
-                                    <td>{student.email}</td>
-                                    <td>{student.phone}</td>
-                                    <td>{student.age}</td>
-                                    <td>
-                                        <img src={"https://localhost:44315/images/"+student.photo+"?t="+new Date().getTime()} alt="Самогон" width="150" />
-                                    </td>
-                                    <td>
-                                        <button type="button" onClick={() => onDeleteClick(student.id)} className="btn btn-danger">Delete</button>
-                                        <Link className="btn btn-dark" to={`/student/edit/${student.id}`}>Edit</Link>
-                                    </td>
-                                </tr>
-                            );
-                        })
-                    }
-                </tbody>
-            </table>
+            {loading && <EclipseWidget/>}
+            <Table columns={columns} dataSource={list} />;
         </div>
     );
 }

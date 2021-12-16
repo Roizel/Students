@@ -4,9 +4,11 @@ class courseService {
     all() {
         return http.get("api/course/allcourses");
     }
+    
     delete(id) {
         return http.delete(`api/course/deletecourse/${id}`);
     }
+
     create(data) {
         return http.post("api/course/createcourse", data,
         {
@@ -15,9 +17,11 @@ class courseService {
             }
         });
     }
+    
     edit(id) {
         return http.get(`api/course/editcourse/${id}`);
     }
+
     save(data) {
         return http.put("api/course/savecourse", data,
         {
@@ -26,8 +30,17 @@ class courseService {
             }
         });
     }
-    signup(data) {
-        return http.post("api/course/signupcourse", data);
+
+    subscribe(data) {
+        return http.post("api/course/subscribe", data);
+    }
+
+    unsubscribe(data) {
+        return http.post("api/course/unsubscribe", data);
+    }
+
+    studentsCourses(data) {
+        return http.get(`api/course/studentscourses/${data}`);
     }
 }
 

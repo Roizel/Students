@@ -12,4 +12,7 @@ export const DELETE_COURSE = 'DELETE_COURSE';
 export const EDIT_COURSE = 'EDIT_COURSE';
 export const EDIT_SAVE_COURSE = 'EDIT_SAVE_COURSE'
 export const COURSE_ALL = 'COURSE_ALL';
-export const SIGN_UP_COURSE = 'SIGN_UP_COURSE';
+export const SUBSCRIBE = 'SUBSCRIBE';
+export const UNSUBSCRIBE = 'UNSUBSCRIBE';
+
+export const GET_STUDENT_COURSE = 'GET_STUDENT_COURSE';

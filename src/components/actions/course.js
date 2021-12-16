@@ -1,4 +1,6 @@
-import { COURSE_ALL, DELETE_COURSE, CREATE_COURSE, EDIT_COURSE, EDIT_SAVE_COURSE, SIGN_UP_COURSE} from "../../constants/actionTypes";
+import { COURSE_ALL, DELETE_COURSE, CREATE_COURSE, EDIT_COURSE, 
+EDIT_SAVE_COURSE, SUBSCRIBE, GET_STUDENT_COURSE, UNSUBSCRIBE} from "../../constants/actionTypes";
+
 import courseService from "../services/courseService";
 
 export const CourseAll = () => async (dispatch) => {
@@ -45,10 +47,32 @@ export const EditCourse = (model) => async (dispatch) => {
     }
 }
 
-export const SignUpCourse = (data) => async (dispatch) => {
+export const Subscribe = (data) => async (dispatch) => {
     try {
-        const result = await courseService.signup(data);
-        dispatch({type: SIGN_UP_COURSE});
+        const result = await courseService.subscribe(data);
+        dispatch({type: SUBSCRIBE});
+        return Promise.resolve(result);
+    } 
+    catch (err) {
+        return Promise.reject(err.response.data);
+    }
+}
+
+export const UnSubscribe = (data) => async (dispatch) => {
+    try {
+        const result = await courseService.unsubscribe(data);
+        dispatch({type: UNSUBSCRIBE});
+        return Promise.resolve(result);
+    } 
+    catch (err) {
+        return Promise.reject(err.response.data);
+    }
+}
+
+export const GetStudentCourse = (data) => async (dispatch) => {
+    try {
+        const result = await courseService.studentsCourses(data);
+        dispatch({type: GET_STUDENT_COURSE, payload: result});
         return Promise.resolve(result);
     } 
     catch (err) {

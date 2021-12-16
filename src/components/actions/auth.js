@@ -7,13 +7,13 @@ export const RegisterUser = (model) => async (dispatch) => {
     try {
         const result = await authService.register(model);
         dispatch({type: REGISTER});
-        localStorage.authToken = token; /*Save token to localStorage*/
         const token = result.data.token;
         dispatch(authUser(token));
+        localStorage.authToken = token;
         return Promise.resolve(result);
     } 
     catch (err) {
-        return Promise.reject(err.response.data);
+        return Promise.reject(err);
     }
 }
 export const LoginUser = (model) => async (dispatch) => {
@@ -21,6 +21,7 @@ export const LoginUser = (model) => async (dispatch) => {
         const result = await authService.login(model);
         const token = result.data.token;
         const role = result.data.isAdmin;
+        console.log(result.data);
         localStorage.authToken = token;
         localStorage.role = role;
         dispatch(authUser(token, role));

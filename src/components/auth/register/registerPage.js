@@ -32,18 +32,21 @@ const RegisterPage = () => {
         console.log("Нажалось");
         dispatch(RegisterUser(formData))
             .then(result => {
-                history("/");
+                history("/studentCourses");
                 console.log("Ok");
             })
             .catch(ex => {
                 const { errors } = ex;
-                Object.entries(errors).forEach(([key, values]) => {
-                    let message = '';
-                    values.forEach(text => message += text + " ");
-                    formikRef.current.setFieldError(key, message);
-                });
-                setInvalid(errors.invalid);
-                titleRef.current.scrollIntoView({ behavior: 'smooth' })
+                if(errors !== undefined || errors !== undefined)
+                {
+                    Object.entries(errors).forEach(([key, values]) => {
+                        let message = '';
+                        values.forEach(text => message += text + " ");
+                        formikRef.current.setFieldError(key, message);
+                    });
+                    setInvalid(errors.invalid);
+                    titleRef.current.scrollIntoView({ behavior: 'smooth' })
+                }
             });
     }
 
