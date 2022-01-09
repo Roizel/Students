@@ -32,8 +32,8 @@ const RegisterPage = () => {
         console.log("Нажалось");
         dispatch(RegisterUser(formData))
             .then(result => {
+                alert("Confirm your account. Link was send to your email");
                 history("/studentCourses");
-                console.log("Ok");
             })
             .catch(ex => {
                 const { errors } = ex;

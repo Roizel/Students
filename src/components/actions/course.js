@@ -7,7 +7,7 @@ export const CourseAll = () => async (dispatch) => {
     try {
         const {data} = await courseService.all();
         dispatch({type: COURSE_ALL, payload: data});
-        return Promise.resolve();
+        return Promise.resolve(data);
     } 
     catch (err) {
         return Promise.reject(err.response.data);

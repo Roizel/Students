@@ -13,7 +13,24 @@ const StudentCourse = () => {
     const { list, courseStudent } = useSelector(state => state.courses);
     const { user, isAuth } = useSelector(redux => redux.auth);
     const [loading, setLoading] = useState(true);
-    let ymry2 = null;
+
+    useEffect(() => {
+        try {
+            dispatch(CourseAll())
+                .then(res => { setLoading(false) })
+                .catch(res => { setLoading(false) })
+
+            if (user.name != null) {
+                    dispatch(GetStudentCourse(user.name))
+                        .then(result => {
+                            dispatch({ type: GET_STUDENT_COURSE, payload: result });
+                        })
+                        .catch(res => { setLoading(false) })
+                }
+        }
+        catch (error) { console.log("Server error global"); }
+        setLoading(false);
+    }, [])
 
     const columnsForUnrgUser = [
         { title: 'Id',           dataIndex: 'id',          key: 'id', },
@@ -25,61 +42,22 @@ const StudentCourse = () => {
     ]
 
     const columnsForRegistUser = [
-        {ymry: CheckSubscibe(text => text.id)},
         { title: 'Id',           dataIndex: 'id',           key: 'id',},
         { title: 'Name',         dataIndex: 'name',         key: 'name',         render: text => <a>{text}</a>, },
         { title: 'Description',  dataIndex: 'description',  key: 'description',  render: text => <a>{text}</a>,},
         { title: 'Duration',     dataIndex: 'duration',     key: 'duration',},
         { title: 'Photo',        dataIndex: 'photo',        key: 'photo',        render: text => <img src={"https://localhost:44315"+text} alt="Самогон" width="100" />, },
         { title: 'Subscribe',    dataIndex: '',             key: 'subscribe',    render: id  => <button type="button" onClick={() => onSubscribeClick(id.id, user.name)} className={classnames("btn", 
-                                                                                                                                                                                  {"btn btn-dark": ymry == true}, 
-                                                                                                                                                                                  {disabled: ymry == false})}
+                                                                                                                                                                                  {"btn btn-dark": CheckSubscibe(id.id) == false}, 
+                                                                                                                                                                                  {disabled: CheckSubscibe(id.id) == true})}
                                                                                                                                                                                   >Subscribe
                                                                                                                                                                                   </button>,},                                                       
-        { title: 'Unsubscribe',  dataIndex: '',             key: 'unSubscribe',  render: id => <button type="button" onClick={() => onUnSubscribeClick(id.id, user.name)} className="btn btn-danger">Unsubscribe</button>,}, 
+        { title: 'Unsubscribe',  dataIndex: '',             key: 'unSubscribe',  render: id => <button type="button" onClick={() => onUnSubscribeClick(id.id, user.name)} className={classnames("btn", 
+                                                                                                                                                                                  {disabled: CheckSubscibe(id.id) == false}, 
+                                                                                                                                                                                  {"btn btn-danger": CheckSubscibe(id.id) == true})}
+                                                                                                                                                                                  >Unsubscribe
+                                                                                                                                                                                  </button>,}, 
     ]
-
-
-    useEffect(() => {
-        try {
-            dispatch(CourseAll())
-                .then(res => { setLoading(false) })
-                .catch(res => { setLoading(false) })
-        }
-        catch (error) { console.log("Server error global"); }
-
-        try {
-            if (user.name != null) {
-                dispatch(GetStudentCourse(user.name))
-                    .then(result => {
-                        dispatch({ type: GET_STUDENT_COURSE, payload: result });
-                    })
-                    .catch(res => { setLoading(false) })
-            }
-        }
-        catch (error) {
-            console.log("Server error global");
-        }
-        setLoading(false);
-    }, [])
-    const CheckSubscibe = (id) => {
-        let courseId = [];
-        let IsSubs;
-        const { data } = courseStudent
-        data.map((course) => {
-            courseId.push(course.courseId);
-        })
-
-        let check = courseId.find(ex => ex === id);
-        if (check == id) {
-            IsSubs = true;
-        }
-        else {
-            IsSubs = false;
-        }
-
-        return IsSubs
-    }
 
     const onSubscribeClick = (id, name) => {
         try {
@@ -108,6 +86,24 @@ const StudentCourse = () => {
 
         }
     }
+    const CheckSubscibe = (id) => {
+        let courseId = [];
+        let IsSubs;
+        const {data} = courseStudent;
+        data.map((course) => {
+            courseId.push(course.courseId);
+        })
+
+        let check = courseId.find(ex => ex === id);
+        if (check == id) {
+            IsSubs = true;
+        }
+        else {
+            IsSubs = false;
+        }
+        return IsSubs
+    }
+
     return (
         <div className="row">
             <h3 className="mt-4 mb-4">Курси</h3>
@@ -122,29 +118,6 @@ const StudentCourse = () => {
 }
 
 export default StudentCourse;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
