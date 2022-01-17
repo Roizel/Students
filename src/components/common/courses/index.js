@@ -18,7 +18,7 @@ const CoursePage = () => {
         { title: 'Duration',     dataIndex: 'duration',     key: 'duration',},
         { title: 'Photo',        dataIndex: 'photo',        key: 'photo',    render: text => <img src={"https://localhost:44315"+text} alt="Самогон" width="100" />, },
         { title: 'Delete',       dataIndex: '',             key: 'delete',   render: id => <button type="button" onClick={() => onDeleteClick(id.id)} className="btn btn-danger">Delete</button>,},
-        { title: 'Edit',         dataIndex: '',             key: 'edit',   render: id => <Link className="btn btn-warning" to={`/student/edit/${id.id}`}>Edit</Link>,},
+        { title: 'Edit',         dataIndex: '',             key: 'edit',   render: id => <Link className="btn btn-warning" to={`/course/edit/${id.id}`}>Edit</Link>,},
     ]
 
     useEffect(() => {

@@ -10,6 +10,7 @@ import EditStudentPage from "./components/common/edit/student/editStudentPage";
 import StudentPage from "./components/common/edit/student";
 import EditCoursePage from "./components/common/edit/course/editCoursePage";
 import StudentCourse from "./components/courseforstudent/index";
+import RegisterFb from "./components/auth/register/registerFb";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
            <Route exact path="/login" element = {<LoginPage/>}></Route>
            <Route exact path="/courses" element = {<CoursePage/>}></Route>
            <Route exact path="/studentCourses" element = {<StudentCourse/>}></Route>
+           <Route exact path="/registerFb/:token" element = {<RegisterFb/>}></Route>
            <Route exact path="/createCourse" element = {<CreateCoursePage/>}></Route>
            <Route exact path="/student/edit/:id" element = {<EditStudentPage/>}></Route>
            <Route exact path="/course/edit/:id" element = {<EditCoursePage/>}></Route>

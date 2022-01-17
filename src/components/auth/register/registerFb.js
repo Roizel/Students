@@ -1,14 +1,14 @@
-import React, { useRef, useState } from 'react'
-import validationFields from './validation';
+import React, { useRef, useState, useEffect } from 'react'
+import validationFieldsFB from './validationFB';
 import { Formik, Form } from 'formik';
 import MyTextInput from "../../common/inputs/inputText";
 import MyPhotoInput from '../../common/inputs/photoInput';
 import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
-import FacebookLogin from 'react-facebook-login';
-import { RegisterUser, authFacebook } from '../../actions/auth';
+import { useParams } from "react-router-dom";
+import { RegisterFacebook, GetUserFromFacebook } from '../../actions/auth';
 
-const RegisterPage = () => {
+const RegisterFb = () => {
 
     const initState = {
         name: '',
@@ -17,36 +17,45 @@ const RegisterPage = () => {
         age: '',
         photo: null,
         phone: '',
-        password: '',
-        confirmPassword: ''
     };
 
-    const [login, setLogin] = useState(false);
-    const [data, setData] = useState({});
-    const [picture, setPicture] = useState('');
-
+    const { token } = useParams();
     const formikRef = useRef();
     const titleRef = useRef();
     const [invalid, setInvalid] = useState([]);
     const history = useNavigate();
 
-    const responseFacebook = (response) => {
-        if (response.accessToken) {
-            history(`/registerFb/${response.accessToken}`);
-        }
-        else {
-            alert("User with this token doesn`t exist");
-        }
-    }
+    useEffect(() => {
+        const formData = new FormData();
+        formData.append('facebookToken', token);
+        GetUserFromFacebook(formData)
+            .then(result => {
+                formikRef.current.setFieldValue("name", result.data.firstName);
+                formikRef.current.setFieldValue("surname", result.data.lastName);
+                formikRef.current.setFieldValue("email", result.data.email);
+            })
+            .catch(result => {
+                console.log(result.response.status);
+                if (result.response.status === 409) {
+                    alert("This email already exist");
+                    history("/");
+                }
+                if (result.response.status === 404) {
+                    alert("Something went worng :(");
+                }
+                if (result.response.status === 400) {
+                    alert("Something went worng :(");
+                }
+            });
+    }, [])
 
     const dispatch = useDispatch();
     const onSubmitHandler = (values) => {
         const formData = new FormData();
         Object.entries(values).forEach(([key, value]) => formData.append(key, value));
-        console.log("Нажалось");
-        dispatch(RegisterUser(formData))
+        dispatch(RegisterFacebook(formData))
             .then(result => {
-                alert("Confirm your account. Link was send to your email");
+                alert("Cool!");
                 history("/studentCourses");
             })
             .catch(ex => {
@@ -85,7 +94,7 @@ const RegisterPage = () => {
                     innerRef={formikRef}
                     initialValues={initState}
                     onSubmit={onSubmitHandler}
-                    validationSchema={validationFields()}>
+                    validationSchema={validationFieldsFB()}>
                     <Form>
                         <MyTextInput
                             label="Name"
@@ -133,39 +142,12 @@ const RegisterPage = () => {
                             id="photo"
                             formikRef={formikRef}
                         />
-
-                        <MyTextInput
-                            label="Пароль"
-                            name="password"
-                            type="password"
-                            id="password"
-                            placeH="Write your password"
-                        />
-
-                        <MyTextInput
-                            label="Повторіть пароль"
-                            name="confirmPassword"
-                            type="password"
-                            id="confirmPassword"
-                            placeH="Confirm password"
-                        />
                         <button type="submit" className="btn btn-dark">Реєстрація</button>
-
-
                     </Form>
                 </Formik>
-                {!login &&
-                    <FacebookLogin
-                        appId="YOUR APP ID"
-                        autoLoad={false}
-                        scope="public_profile,user_friends"
-                        callback={responseFacebook}
-                        icon="fa-facebook" 
-                    />
-                }
             </div>
         </div>
     )
 }
 
-export default RegisterPage;
+export default RegisterFb;
