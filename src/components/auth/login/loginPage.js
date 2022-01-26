@@ -106,7 +106,7 @@ const LoginPage = () => {
 
                     <button type="submit" className="btn btn-dark">Увійти</button>
                     <FacebookLogin
-                        appId="YOUR APP ID"
+                        appId="621571515727147"
                         autoLoad={false}
                         scope="public_profile,user_friends"
                         callback={responseFacebook}

@@ -1,4 +1,4 @@
-import { USERS_ALL, USERS_DELETED, USERS_EDIT, USERS_EDIT_SAVE} from "../constants/actionTypes";
+import { USERS_DELETED, USERS_EDIT, USERS_EDIT_SAVE} from "../constants/actionTypes";
 
 const initialState = {
     list: [],
@@ -7,14 +7,7 @@ const initialState = {
 
 const studentReducer = (state = initialState, action) => {
     const { type, payload } = action;
-    console.log("payload", payload);
     switch (type) {
-        case USERS_ALL: {
-            return {
-                ...state,
-                list: payload
-            }
-        }
         case USERS_DELETED: {
             return {
                 ...state,

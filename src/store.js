@@ -3,6 +3,7 @@ import thunk from "redux-thunk";
 import authReducer from "./reducers/authReducer";
 import courseReducer from "./reducers/courseReducer";
 import studentReducer from "./reducers/studentReducer";
+import paginationReducer from "./reducers/paginationReducer";
 
 const middleware = [
     thunk
@@ -11,7 +12,8 @@ const middleware = [
 const rootReducer = combineReducers({
    auth: authReducer,
    students: studentReducer,
-   courses: courseReducer
+   courses: courseReducer,
+   pagination: paginationReducer
 });
 
  // In development, use the browser's Redux dev tools extension if installed

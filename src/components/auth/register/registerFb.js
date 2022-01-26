@@ -55,7 +55,6 @@ const RegisterFb = () => {
         Object.entries(values).forEach(([key, value]) => formData.append(key, value));
         dispatch(RegisterFacebook(formData))
             .then(result => {
-                alert("Cool!");
                 history("/studentCourses");
             })
             .catch(ex => {

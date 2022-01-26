@@ -1,9 +1,6 @@
 import http from "../../http_common";
 class studentsService {
-
-    all() {
-        return http.get("api/account/allstudents");
-    }
+    
     delete(id) {
         return http.delete(`api/account/delete/${id}`);
     }

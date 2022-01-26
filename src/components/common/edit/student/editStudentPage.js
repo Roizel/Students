@@ -34,7 +34,7 @@ const EditStudentPage = () => {
         console.log(values);
         dispatch(StudentEditSave(formData))
             .then(result => {
-                history("/");
+                history("/students");
                 console.log("Ok");
             })
             .catch(ex => {

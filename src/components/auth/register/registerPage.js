@@ -43,7 +43,6 @@ const RegisterPage = () => {
     const onSubmitHandler = (values) => {
         const formData = new FormData();
         Object.entries(values).forEach(([key, value]) => formData.append(key, value));
-        console.log("Нажалось");
         dispatch(RegisterUser(formData))
             .then(result => {
                 alert("Confirm your account. Link was send to your email");
@@ -156,7 +155,7 @@ const RegisterPage = () => {
                 </Formik>
                 {!login &&
                     <FacebookLogin
-                        appId="YOUR APP ID"
+                        appId="621571515727147"
                         autoLoad={false}
                         scope="public_profile,user_friends"
                         callback={responseFacebook}
