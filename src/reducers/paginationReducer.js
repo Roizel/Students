@@ -1,7 +1,8 @@
-import { USERS_ALL } from "../constants/actionTypes";
+import { USERS_ALL, COURSE_ALL } from "../constants/actionTypes";
 
 const initialState = {
-    list: [],
+    listOfUsers: [],
+    listOfCourses: []
 }
 
 const paginationReducer = (state = initialState, action) => {
@@ -10,7 +11,13 @@ const paginationReducer = (state = initialState, action) => {
         case USERS_ALL: {
             return {
                 ...state,
-                list: payload
+                listOfUsers: payload
+            }
+        }
+        case COURSE_ALL: {
+            return {
+                ...state,
+                listOfCourses: payload
             }
         }
         default:

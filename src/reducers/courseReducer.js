@@ -4,7 +4,7 @@ import { COURSE_ALL, DELETE_COURSE, CREATE_COURSE,
 const initialState = {
     list: [],
     editedCourse: {},
-    courseStudent: [] /*course - student*/
+    courseStudent: []
 }
 
 const courseReducer = (state = initialState, action) => {
