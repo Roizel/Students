@@ -1,12 +1,14 @@
-import { USERS_ALL, COURSE_ALL } from "../constants/actionTypes";
+import { USERS_ALL, COURSE_ALL, USERS_DELETED, DELETE_COURSE, GET_STUDENT_COURSE } from "../constants/actionTypes";
 
 const initialState = {
     listOfUsers: [],
-    listOfCourses: []
+    listOfCourses: [],
+    courseStudent: []
 }
 
 const paginationReducer = (state = initialState, action) => {
     const { type, payload } = action;
+    
     switch (type) {
         case USERS_ALL: {
             return {
@@ -19,6 +21,24 @@ const paginationReducer = (state = initialState, action) => {
                 ...state,
                 listOfCourses: payload
             }
+        }
+        case GET_STUDENT_COURSE: {
+            return {
+                ...state,
+                courseStudent: payload
+            }
+        }
+        case USERS_DELETED: {
+            return {
+                ...state,
+                listOfUsers: state.listOfUsers.filter(item => item.id !== payload)
+            };
+        }
+        case DELETE_COURSE: {
+            return {
+                ...state,
+                listOfCourses: state.listOfCourses.filter(item => item.id !== payload)
+            };
         }
         default:
             return state;

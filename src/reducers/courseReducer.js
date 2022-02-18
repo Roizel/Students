@@ -1,10 +1,10 @@
 import { COURSE_ALL, DELETE_COURSE, CREATE_COURSE, 
-    EDIT_COURSE, EDIT_SAVE_COURSE, GET_STUDENT_COURSE, UNSUBSCRIBE} from "../constants/actionTypes";
+    EDIT_COURSE, EDIT_SAVE_COURSE, GET_STUDENTS_COURSES, UNSUBSCRIBE} from "../constants/actionTypes";
 
 const initialState = {
     list: [],
     editedCourse: {},
-    courseStudent: []
+    studentsCourses: [],
 }
 
 const courseReducer = (state = initialState, action) => {
@@ -39,10 +39,9 @@ const courseReducer = (state = initialState, action) => {
                 ...state
             }
         }
-        case GET_STUDENT_COURSE: {
+        case GET_STUDENTS_COURSES: {
             return {
-                ...state,
-                courseStudent: payload
+                studentsCourses: payload
             }
         }
         case UNSUBSCRIBE: {

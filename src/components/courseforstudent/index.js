@@ -1,9 +1,9 @@
-import { GET_STUDENT_COURSE } from "../../constants/actionTypes";
+import { GET_STUDENT_COURSE, COURSE_ALL } from "../../constants/actionTypes";
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import classnames from "classnames";
 import { Subscribe, GetStudentCourse, UnSubscribe } from '../../components/actions/course';
-import { CourseAll, PaggingCourses } from '../actions/pagination';
+import { CourseAll, PaggingCourses, PaggingCoursesWithSubs } from '../actions/pagination';
 import EclipseWidget from '../common/eclipse/index';
 import 'antd/dist/antd.css';
 import { Pagination, Table, Tag, Space, Input } from 'antd';
@@ -11,11 +11,13 @@ import { Pagination, Table, Tag, Space, Input } from 'antd';
 
 const StudentCourse = () => {
     const dispatch = useDispatch();
-    const { courseStudent } = useSelector(state => state.courses);
     const { listOfCourses } = useSelector(state => state.pagination);
     const { user, isAuth } = useSelector(redux => redux.auth);
 
+    const [subs, setSubs] = useState([]);
+
     const [typeOfSort, setTypeOfSort] = useState("");
+    const [pageSize, setPageSize] = useState(10);
     const [columnSort, setColumnSort] = useState("");
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
@@ -26,32 +28,28 @@ const StudentCourse = () => {
 
     useEffect(() => {
         try {
-            dispatch(CourseAll())
-                .then(res => {
-                    console.log(res);
-                    setTotalPages(res.total);
-                    setLoading(false);
-
-                })
-                .catch(res => { setLoading(false) })
-
-            if (user.name != null) {
-                dispatch(GetStudentCourse(user.name))
-                    .then(result => {
-                        dispatch({ type: GET_STUDENT_COURSE, payload: result });
-                    })
-                    .catch(res => { setLoading(false) })
+            const formData = new FormData();
+            if(user.name != undefined)
+            {
+                formData.append('Name', user.name);
             }
+            dispatch(PaggingCoursesWithSubs(formData))
+            .then(res => {
+                dispatch({type: GET_STUDENT_COURSE, payload: res.subscriptions});
+                setSubs(res.subscriptions);
+                setTotalPages(res.total);
+                setLoading(false);
+            })
+            .catch(res => { console.log(res); setLoading(false)})
         }
-        catch (error) { console.log("Server error global"); }
-        setLoading(false);
+        catch (error) { console.log("Server error global", error ); }
     }, [])
 
     const columnsForUnrgUser = [
         { title: 'Id',           dataIndex: 'id',          key: 'id', sorter: true},
         { title: 'Name',         dataIndex: 'name',        key: 'name', sorter: true,        render: text => <a>{text}</a>, },
         { title: 'Description',  dataIndex: 'description', key: 'description',  render: text => <a>{text}</a>, },
-        { title: 'Duration',     dataIndex: 'duration',    key: 'duration', sorter: true},
+        { title: 'Duration',     dataIndex: 'duration',    key: 'duration'},
         { title: 'StartCourse',  dataIndex: 'startCourse', key: 'startCourse', },
         { title: 'Photo',        dataIndex: 'photo',       key: 'photo',        render: text => <img src={"https://localhost:44315" + text} alt="Самогон" width="100" />, },
     ]
@@ -81,8 +79,10 @@ const StudentCourse = () => {
         formData.append('SearchWord', text);
         formData.append('Sort', columnSort);
         formData.append('TypeOfSort', typeOfSort);
+        formData.append('PageSize', pageSize);
 
-        dispatch(PaggingCourses(formData))
+        
+        dispatch(PaggingCoursesWithSubs(formData))
             .then(res => {
                 setTotalPages(res.total);
                 setLoading(false);
@@ -94,15 +94,16 @@ const StudentCourse = () => {
             })
     }
 
-    const Pag = (page) => {
+    const Pag = (page, pageSize) => {
 
         const formData = new FormData();
         formData.append('SearchWord', searchText);
         formData.append('Sort', columnSort);
         formData.append('Page', page);
         formData.append('TypeOfSort', typeOfSort);
+        formData.append('PageSize', pageSize);
 
-        dispatch(PaggingCourses(formData))
+        dispatch(PaggingCoursesWithSubs(formData))
             .then(res => {
                 setPage(page);
                 setTotalPages(res.total);
@@ -125,8 +126,9 @@ const StudentCourse = () => {
         formData.append('Sort', nameOfField);
         formData.append('Page', page);
         formData.append('TypeOfSort', typeOfSorting);
+        formData.append('PageSize', pageSize);
 
-        dispatch(PaggingCourses(formData))
+        dispatch(PaggingCoursesWithSubs(formData))
             .then(res => {
                 setTotalPages(res.total);
                 setColumnSort(nameOfField);
@@ -172,8 +174,7 @@ const StudentCourse = () => {
     const CheckSubscibe = (id) => {
         let courseId = [];
         let IsSubs;
-        const { data } = courseStudent;
-        data.map((course) => {
+        subs.map((course) => {
             courseId.push(course.courseId);
         })
 
@@ -212,7 +213,13 @@ const StudentCourse = () => {
                     onChange={Sort}
                 />
             }
-            <Pagination defaultCurrent={1} total={totalPages} onChange={(page) => Pag(page)} />
+             <Pagination 
+                    defaultCurrent={1} 
+                    total={totalPages}
+                    showSizeChanger
+                    showTotal={total => `Total ${totalPages} items`}
+                    onChange={(page, pageSize) => Pag(page, pageSize)} 
+             />
         </div>
     );
 }

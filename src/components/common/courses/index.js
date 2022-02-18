@@ -13,6 +13,7 @@ const CoursePage = () => {
     const [loading, setLoading] = useState(true);
 
     const [typeOfSort, setTypeOfSort] = useState("");
+    const [pageSize, setPageSize] = useState(10);
     const [columnSort, setColumnSort] = useState("");
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
@@ -24,7 +25,7 @@ const CoursePage = () => {
         { title: 'Id',           dataIndex: 'id',           key: 'id', sorter: true},
         { title: 'Name',         dataIndex: 'name',         key: 'name', sorter: true, render: text => <a>{text}</a>, },
         { title: 'Description',  dataIndex: 'description',  key: 'description',  render: text => <a>{text}</a>,},
-        { title: 'Duration',     dataIndex: 'duration',     key: 'duration', sorter: true},
+        { title: 'Duration',     dataIndex: 'duration',     key: 'duration'},
         { title: 'Photo',        dataIndex: 'photo',        key: 'photo',    render: text => <img src={"https://localhost:44315"+text} alt="Самогон" width="100" />, },
         { title: 'Delete',       dataIndex: '',             key: 'delete',   render: id => <button type="button" onClick={() => onDeleteClick(id.id)} className="btn btn-danger">Delete</button>,},
         { title: 'Edit',         dataIndex: '',             key: 'edit',   render: id => <Link className="btn btn-warning" to={`/course/edit/${id.id}`}>Edit</Link>,},
@@ -37,6 +38,8 @@ const CoursePage = () => {
         formData.append('SearchWord', text);
         formData.append('Sort', columnSort);
         formData.append('TypeOfSort', typeOfSort);
+        formData.append('PageSize', pageSize);
+
         
         dispatch(PaggingCourses(formData))
             .then(res => {
@@ -50,13 +53,14 @@ const CoursePage = () => {
             })
     }
 
-    const Pag = (page) => {
+    const Pag = (page, pageSize) => {
 
         const formData = new FormData();
         formData.append('SearchWord', searchText);
         formData.append('Sort', columnSort);
         formData.append('Page', page);
         formData.append('TypeOfSort', typeOfSort);
+        formData.append('PageSize', pageSize);
 
         dispatch(PaggingCourses(formData))
             .then(res => {
@@ -81,6 +85,7 @@ const CoursePage = () => {
         formData.append('Sort', nameOfField);
         formData.append('Page', page);
         formData.append('TypeOfSort', typeOfSorting);
+        formData.append('PageSize', pageSize);
 
         dispatch(PaggingCourses(formData))
             .then(res => {
@@ -100,7 +105,7 @@ const CoursePage = () => {
 
     useEffect(() => {
         try {
-            dispatch(CourseAll())
+            dispatch(PaggingCourses())
                 .then(res => {
                     console.log(res);
                     setTotalPages(res.total);
@@ -126,6 +131,7 @@ const CoursePage = () => {
 
         }
     }
+
     return (
         <div className="row">
         {loading && <EclipseWidget />}
@@ -138,12 +144,18 @@ const CoursePage = () => {
             onSearch={(text) => GetData(text)}
         />
         <Table 
-            pagination={false} 
+            pagination={false}
             columns={columns} 
             dataSource={listOfCourses} 
             onChange={Sort} 
             />
-        <Pagination defaultCurrent={1} total={totalPages} onChange={(page) => Pag(page)}/>
+        <Pagination 
+            defaultCurrent={1} 
+            total={totalPages}
+            showSizeChanger
+            showTotal={total => `Total ${totalPages} items`}
+            onChange={(page, pageSize) => Pag(page, pageSize)} 
+        />
     </div>
     );
 }

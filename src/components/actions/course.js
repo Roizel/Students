@@ -1,5 +1,5 @@
 import { COURSE_ALL, DELETE_COURSE, CREATE_COURSE, EDIT_COURSE, 
-EDIT_SAVE_COURSE, SUBSCRIBE, GET_STUDENT_COURSE, UNSUBSCRIBE} from "../../constants/actionTypes";
+EDIT_SAVE_COURSE, SUBSCRIBE, GET_STUDENT_COURSE, UNSUBSCRIBE, GET_STUDENTS_COURSES} from "../../constants/actionTypes";
 
 import courseService from "../services/courseService";
 
@@ -69,11 +69,11 @@ export const UnSubscribe = (data) => async (dispatch) => {
     }
 }
 
-export const GetStudentCourse = (data) => async (dispatch) => {
+export const GetStudentsCourses = () => async (dispatch) => { /*Get all subscriptions of every students*/
     try {
-        const result = await courseService.studentsCourses(data);
-        dispatch({type: GET_STUDENT_COURSE, payload: result});
-        return Promise.resolve(result);
+        const {data} = await courseService.studentsCourses();
+        dispatch({type: GET_STUDENTS_COURSES, payload: data});
+        return Promise.resolve(data);
     } 
     catch (err) {
         return Promise.reject(err.response.data);

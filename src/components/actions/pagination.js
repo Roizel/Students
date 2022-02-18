@@ -1,16 +1,7 @@
-import { USERS_ALL, COURSE_ALL } from "../../constants/actionTypes";
+import { USERS_ALL, COURSE_ALL, GET_STUDENT_COURSE } from "../../constants/actionTypes";
 import paginationService from "../services/paginationService";
-
-export const StudentsAll = () => async (dispatch) => {
-    try {
-        const {data} = await paginationService.allStudents();
-        dispatch({type: USERS_ALL, payload: data.result.students});
-        return Promise.resolve(data.result);
-    } 
-    catch (err) {
-        return Promise.reject(err.response.data);
-    }
-}
+import { useDispatch } from 'react-redux';
+    
 
 export const PaggingStudents = (values) => async (dispatch) => {
     try {
@@ -38,9 +29,23 @@ export const PaggingCourses = (values) => async (dispatch) => {
     try {
         const {data} = await paginationService.sortingCourses(values);
         dispatch({type: COURSE_ALL, payload: data.result.courses});
+        console.log(data)
         return Promise.resolve(data.result);
     } 
     catch (err) {
+        console.log(err)
         return Promise.reject(err.response.data);
+    }
+}
+
+export const PaggingCoursesWithSubs = (values) => async (dispatch) => {
+    try {
+        const data = await paginationService.sortingCourseWithSubs(values);
+        dispatch({type: COURSE_ALL, payload: data.data.result.courses});
+        return Promise.resolve(data.data.result);
+    } 
+    catch (err) {
+        console.log(err);
+        return Promise.reject(err);
     }
 }

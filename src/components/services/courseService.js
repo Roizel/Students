@@ -39,8 +39,8 @@ class courseService {
         return http.post("api/course/unsubscribe", data);
     }
 
-    studentsCourses(data) {
-        return http.get(`api/course/studentscourses/${data}`);
+    studentsCourses() {
+        return http.get(`api/course/allcourseswithstudents`);
     }
 }
 

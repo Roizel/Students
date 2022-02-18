@@ -18,7 +18,6 @@ function App() {
         <Navbar/>
       <div className="container">
         <Routes >
-           <Route exact path="/" element = {<HomePage/>}></Route>
            <Route exact path="/students" element = {<StudentPage/>}></Route>
            <Route exact path="/register" element = {<RegisterPage/>}></Route>
            <Route exact path="/login" element = {<LoginPage/>}></Route>
@@ -28,6 +27,7 @@ function App() {
            <Route exact path="/createCourse" element = {<CreateCoursePage/>}></Route>
            <Route exact path="/student/edit/:id" element = {<EditStudentPage/>}></Route>
            <Route exact path="/course/edit/:id" element = {<EditCoursePage/>}></Route>
+           <Route exact path="/" element = {<HomePage/>}></Route>
         </Routes >
       </div>
     </BrowserRouter>
