@@ -17,3 +17,6 @@ export const UNSUBSCRIBE = 'UNSUBSCRIBE';
 
 export const GET_STUDENT_COURSE = 'GET_STUDENT_COURSE'; /*For SUBSCRIBE and UNSUBSCRIBE*/
 export const GET_STUDENTS_COURSES = 'GET_STUDENTS_COURSES'; /*For AdminPanel*/
+
+
+export const LOCAL_HOST = 'https://localhost:44315';

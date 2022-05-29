@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { useParams } from "react-router-dom";
 import { RegisterFacebook, GetUserFromFacebook } from '../../actions/auth';
+import { message } from 'antd';
 
 const RegisterFb = () => {
 
@@ -37,14 +38,14 @@ const RegisterFb = () => {
             .catch(result => {
                 console.log(result.response.status);
                 if (result.response.status === 409) {
-                    alert("This email already exist");
+                    message.error("This email already exist");
                     history("/");
                 }
                 if (result.response.status === 404) {
-                    alert("Something went worng :(");
+                    message.error("Something went worng :(");
                 }
                 if (result.response.status === 400) {
-                    alert("Something went worng :(");
+                    message.error("Something went worng :(");
                 }
             });
     }, [])

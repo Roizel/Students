@@ -42,6 +42,7 @@ export const PaggingCoursesWithSubs = (values) => async (dispatch) => {
     try {
         const data = await paginationService.sortingCourseWithSubs(values);
         dispatch({type: COURSE_ALL, payload: data.data.result.courses});
+        console.log(data);
         return Promise.resolve(data.data.result);
     } 
     catch (err) {

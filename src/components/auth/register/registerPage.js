@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
 import FacebookLogin from 'react-facebook-login';
 import { RegisterUser, authFacebook } from '../../actions/auth';
+import { message } from 'antd';
 
 const RegisterPage = () => {
 
@@ -35,7 +36,7 @@ const RegisterPage = () => {
             history(`/registerFb/${response.accessToken}`);
         }
         else {
-            alert("User with this token doesn`t exist");
+            message.error("User with this token doesn`t exist");
         }
     }
 
@@ -45,7 +46,7 @@ const RegisterPage = () => {
         Object.entries(values).forEach(([key, value]) => formData.append(key, value));
         dispatch(RegisterUser(formData))
             .then(result => {
-                alert("Confirm your account. Link was send to your email");
+                message.warning("Confirm your account. Link was send to your email");
                 history("/studentCourses");
             })
             .catch(ex => {
@@ -159,7 +160,7 @@ const RegisterPage = () => {
                         autoLoad={false}
                         scope="public_profile,user_friends"
                         callback={responseFacebook}
-                        icon="fa-facebook" 
+                        cssClass="loginBtn loginBtn--facebook"
                     />
                 }
             </div>

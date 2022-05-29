@@ -8,6 +8,8 @@ import { useDispatch } from 'react-redux';
 import { StudentEditSave } from '../../../actions/students';
 import { useParams } from "react-router-dom";
 import studentsService from '../../../services/studentsService';
+import { Modal, message } from 'antd';
+import { LOCAL_HOST } from '../../../../constants/actionTypes';
 
 const EditStudentPage = () => {
     const initState = {
@@ -26,28 +28,39 @@ const EditStudentPage = () => {
     const [loading, setLoading] = useState(true);
     const {id} = useParams();
     const history = useNavigate();
-
+    const { confirm } = Modal;
     const dispatch = useDispatch();
+
+
     const onSubmitHandler = (values) => {
-        const formData = new FormData();
-        Object.entries(values).forEach(([key, value]) => formData.append(key, value));
-        console.log(values);
-        dispatch(StudentEditSave(formData))
-            .then(result => {
-                history("/students");
-                console.log("Ok");
-            })
-            .catch(ex => {
-                console.log(ex);
-                const { errors } = ex;
-                Object.entries(errors).forEach(([key, values]) => {
-                    let message = '';
-                    values.forEach(text => message += text + " ");
-                    formikRef.current.setFieldError(key, message);
-                });
-                setInvalid(errors.invalid);
-                titleRef.current.scrollIntoView({ behavior: 'smooth' })
-            });
+
+        confirm({
+            title: 'Edit course?',
+            content: 'Do you want to edit this course?',
+            onOk() {
+                const formData = new FormData();
+                Object.entries(values).forEach(([key, value]) => formData.append(key, value));
+                console.log(values);
+                dispatch(StudentEditSave(formData))
+                    .then(result => {
+                        history("/students");
+                        message.success("Success");
+                    })
+                    .catch(ex => {
+                        console.log(ex);
+                        const { errors } = ex;
+                        Object.entries(errors).forEach(([key, values]) => {
+                            let message = '';
+                            values.forEach(text => message += text + " ");
+                            formikRef.current.setFieldError(key, message);
+                        });
+                        setInvalid(errors.invalid);
+                        titleRef.current.scrollIntoView({ behavior: 'smooth' })
+                        message.error("Error");
+                    });
+            },
+            onCancel() {},
+          });
     }
     useEffect(() => {
         try {
@@ -61,7 +74,7 @@ const EditStudentPage = () => {
                     formikRef.current.setFieldValue("email", data.email);
                     formikRef.current.setFieldValue("phone", data.phone);
                     formikRef.current.setFieldValue("age", data.age);
-                    setImagePath("https://localhost:44315" + data.photo);
+                    setImagePath(LOCAL_HOST + data.photo);
                 })
         }
         catch (error) {

@@ -7,6 +7,8 @@ import { useDispatch } from 'react-redux';
 import { LoginUser } from '../../actions/auth';
 import { LoginFacebook } from '../../actions/auth';
 import FacebookLogin from 'react-facebook-login';
+import { message } from 'antd';
+import "antd/dist/antd.css";
 
 const LoginPage = () => {
 
@@ -14,6 +16,7 @@ const LoginPage = () => {
         email: '',
         password: '',
     };
+
     const formikRef = useRef();
     const titleRef = useRef();
     const dispatch = useDispatch();
@@ -28,18 +31,19 @@ const LoginPage = () => {
             dispatch(LoginFacebook(formData))
                 .then(result => {
                    history("/");
+                   message.success("Login successfully");
                 })
                 .catch(result => {
                     console.log(result.response.status);
                     if (result.response.status === 409) {
-                        alert("This email already exist");
+                        message.error("This email already exist");
                         history("/");
                     }
                     if (result.response.status === 404) {
-                        alert("Something went worng :(");
+                        message.error("Something went worng :(");
                     }
                     if (result.response.status === 400) {
-                        alert("Something went worng :(");
+                        message.error("Something went worng :(");
                     }
                 });
         }
@@ -53,8 +57,10 @@ const LoginPage = () => {
         dispatch(LoginUser(formData))
            .then(result => {
                history("/");
+               message.success("Login successfully");
            })
            .catch(ex => {
+            message.info("Login error");
             const { errors } = ex;
             Object.entries(errors).forEach(([key, values]) => {
                 let message = '';
@@ -110,8 +116,9 @@ const LoginPage = () => {
                         autoLoad={false}
                         scope="public_profile,user_friends"
                         callback={responseFacebook}
-                        icon="fa-facebook" 
+                        cssClass="loginBtn loginBtn--facebook"
                     />
+
                 </Form>
             </Formik>
             </div>

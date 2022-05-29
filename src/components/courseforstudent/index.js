@@ -1,12 +1,11 @@
 import { GET_STUDENT_COURSE, COURSE_ALL } from "../../constants/actionTypes";
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import classnames from "classnames";
 import { Subscribe, GetStudentCourse, UnSubscribe } from '../../components/actions/course';
 import { CourseAll, PaggingCourses, PaggingCoursesWithSubs } from '../actions/pagination';
 import EclipseWidget from '../common/eclipse/index';
-import 'antd/dist/antd.css';
-import { Pagination, Table, Tag, Space, Input } from 'antd';
+import { Pagination, Table, Tag, Space, Input, Modal, message } from 'antd';
 
 
 const StudentCourse = () => {
@@ -23,6 +22,7 @@ const StudentCourse = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [searchText, setSearchText] = useState("");
 
+    const { confirm } = Modal;
     const { Search } = Input;
     const [loading, setLoading] = useState(true);
 
@@ -60,22 +60,16 @@ const StudentCourse = () => {
         { title: 'Description',  dataIndex: 'description',  key: 'description',  render: text => <a>{text}</a>,},
         { title: 'Duration',     dataIndex: 'duration',     key: 'duration', sorter: true},
         { title: 'Photo',        dataIndex: 'photo',        key: 'photo',        render: text => <img src={"https://localhost:44315"+text} alt="Самогон" width="100" />, },
-        { title: 'Subscribe',    dataIndex: '',             key: 'subscribe',    render: id  => <button type="button" onClick={() => onSubscribeClick(id.id, user.name)} className={classnames("btn", 
-                                                                                                                                                                                  {"btn btn-dark": CheckSubscibe(id.id) == false}, 
-                                                                                                                                                                                  {disabled: CheckSubscibe(id.id) == true})}
-                                                                                                                                                                                  >Subscribe
-                                                                                                                                                                                  </button>,},                                                       
-        { title: 'Unsubscribe',  dataIndex: '',             key: 'unSubscribe',  render: id => <button type="button" onClick={() => onUnSubscribeClick(id.id, user.name)} className={classnames("btn", 
-                                                                                                                                                                                  {disabled: CheckSubscibe(id.id) == false}, 
-                                                                                                                                                                                  {"btn btn-danger": CheckSubscibe(id.id) == true})}
-                                                                                                                                                                                  >Unsubscribe
-                                                                                                                                                                                  </button>,}, 
+        { title: 'Subscribe',    dataIndex: '',             key: 'subscribe',    render: id  => <button type="button" onClick={!CheckSubscibe(id.id) ? () => onSubscribeClick(id.id, user.name) : () => onUnSubscribeClick(id.id, user.name)} className={classnames("btn",  
+                                                                                                                               !CheckSubscibe(id.id) ? "btn btn-dark" : "btn btn-danger")} 
+                                                                                                                               >{!CheckSubscibe(id.id) ? "Subscribe" : "UnSubscribe"}</button>,}   
     ]
 
     const GetData = (text) => {
 
         setSearchText(text);
         const formData = new FormData();
+        formData.append('Name', user.name);
         formData.append('SearchWord', text);
         formData.append('Sort', columnSort);
         formData.append('TypeOfSort', typeOfSort);
@@ -133,6 +127,7 @@ const StudentCourse = () => {
                 setTotalPages(res.total);
                 setColumnSort(nameOfField);
                 setTypeOfSort(typeOfSorting);
+                setSubs(res.subscriptions);
                 setLoading(false);
 
             })
@@ -145,32 +140,100 @@ const StudentCourse = () => {
     }
 
     const onSubscribeClick = (id, name) => {
-        try {
-            const formData = new FormData();
-            formData.append("CourseId", id);
-            formData.append("Name", name);
-            dispatch(Subscribe(formData))
-                .then(res => { setLoading(false) })
-                .catch(res => { setLoading(false) });
-        }
-        catch (error) {
-
-        }
+        infoForSubscribe(id, name);
     }
-
     const onUnSubscribeClick = (id, name) => {
-        try {
-            const formData = new FormData();
-            formData.append("CourseId", id);
-            formData.append("Name", name);
-            dispatch(UnSubscribe(formData))
-                .then(res => { setLoading(false) })
-                .catch(res => { setLoading(false) });
-        }
-        catch (error) {
-
-        }
+        infoForUnsubscribe(id, name)
     }
+
+    const infoForSubscribe = (id, name) => {
+        confirm({
+            title: 'Subscribe?',
+            content: 'Do you want subscribe on this course?',
+            onOk() {
+                try {
+                    setLoading(true)
+                    const formData = new FormData();
+                    formData.append("CourseId", id);
+                    formData.append("Name", name);
+                    dispatch(Subscribe(formData))
+                        .then(res => {
+                            const data = new FormData();
+                            data.append('Name', user.name);
+                            data.append('SearchWord', searchText);
+                            data.append('Sort', columnSort);
+                            data.append('Page', page);
+                            data.append('TypeOfSort', typeOfSort);
+                            data.append('PageSize', pageSize);
+                            
+                            dispatch(PaggingCoursesWithSubs(data))
+                                .then(res => 
+                                { 
+                                    message.success("Success :) ");
+                                    setSubs(res.subscriptions);
+                                    setLoading(false);
+                                })
+                                .catch(res => { 
+                                    setLoading(false)
+                                    message.error("Something went wrong :(");
+                                });
+                        })
+                        .catch(res => { setLoading(false) });
+                }
+                catch (error) {
+        
+                }
+            },
+            onCancel() {
+              console.log('Cancel');
+            },
+          });
+    }
+
+    const infoForUnsubscribe = (id, name) => {
+        confirm({
+            title: 'Subscribe?',
+            content: 'Do you want Unsubscribe on this course?',
+            onOk() {
+                try {
+                    setLoading(true)
+                    const formData = new FormData();
+                    formData.append("CourseId", id);
+                    formData.append("Name", name);
+                    dispatch(UnSubscribe(formData))
+                        .then(res => {
+                            const data = new FormData();
+                            data.append('Name', user.name);
+                            data.append('SearchWord', searchText);
+                            data.append('Sort', columnSort);
+                            data.append('Page', page);
+                            data.append('TypeOfSort', typeOfSort);
+                            data.append('PageSize', pageSize);
+                            
+                            dispatch(PaggingCoursesWithSubs(data))
+                                .then(res => 
+                                { 
+                                    message.success("Success :) ");
+                                    setSubs(res.subscriptions);
+                                    setLoading(false);
+                                })
+                                .catch(res => { 
+                                    setLoading(false)
+                                    message.error("Something went wrong :(");
+                                 });
+                        })
+                        .catch(res => { setLoading(false) });
+                }
+                catch (error) {
+        
+                }
+            },
+            onCancel() {
+              console.log('Cancel');
+            },
+          });
+      }
+
     const CheckSubscibe = (id) => {
         let courseId = [];
         let IsSubs;

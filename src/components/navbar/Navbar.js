@@ -3,15 +3,33 @@ import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../actions/auth';
 import { useNavigate } from 'react-router';
+import { Modal } from 'antd';
 
 const Navbar = () => {
     const dispatch = useDispatch();
     const history = useNavigate();
-    const { isAuth, user, isAdmin } = useSelector(redux => redux.auth)
+    const { isAuth, user, isAdmin } = useSelector(redux => redux.auth);
+    const { confirm } = Modal;
     const onClickLogout = (e) => {
-        e.preventDefault();
-        dispatch(logout());
-        history("/");
+        Logout(e);
+    }
+    const Logout = (e) => {
+        confirm({
+            title: 'Exit',
+            content: 'Do you want to exit from account?',
+            onOk() {
+                try {
+                    e.preventDefault();
+                    dispatch(logout());
+                    history("/");
+                }
+                catch (error) {
+        
+                }
+            },
+            onCancel() {
+            },
+          });
     }
 
     return (
@@ -60,7 +78,7 @@ const Navbar = () => {
                                     <Link className="nav-link" to="/profile">{user.name}</Link>
                                 </li>
                                 <li className="nav-item">
-                                    <Link className="nav-link" to="/logout" onClick={onClickLogout}>Вихід</Link>
+                                    <label className="nav-link" onClick={onClickLogout}>Вихід</label>
                                 </li>
                             </ul>
                         }

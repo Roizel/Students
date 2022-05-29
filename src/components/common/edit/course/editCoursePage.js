@@ -8,6 +8,8 @@ import { useDispatch } from 'react-redux';
 import { useParams } from "react-router-dom";
 import courseService from '../../../services/courseService';
 import { EditCourse } from '../../../actions/course';
+import { Modal, message } from 'antd';
+import { LOCAL_HOST } from '../../../../constants/actionTypes';
 
 const EditCoursePage = () => {
     const initState = {
@@ -25,28 +27,37 @@ const EditCoursePage = () => {
     const [loading, setLoading] = useState(true);
     const {id} = useParams();
     const history = useNavigate();
+    const { confirm } = Modal;
 
     const dispatch = useDispatch();
     const onSubmitHandler = (values) => {
-        const formData = new FormData();
-        Object.entries(values).forEach(([key, value]) => formData.append(key, value));
-        console.log(values);
-        dispatch(EditCourse(formData))
-            .then(result => {
-                history("/courses");
-                console.log("Ok");
-            })
-            .catch(ex => {
-                console.log(ex);
-                const { errors } = ex;
-                Object.entries(errors).forEach(([key, values]) => {
-                    let message = '';
-                    values.forEach(text => message += text + " ");
-                    formikRef.current.setFieldError(key, message);
-                });
-                setInvalid(errors.invalid);
-                titleRef.current.scrollIntoView({ behavior: 'smooth' })
-            });
+        confirm({
+            title: 'Edit course?',
+            content: 'Do you want to edit this course?',
+            onOk() {
+                const formData = new FormData();
+                Object.entries(values).forEach(([key, value]) => formData.append(key, value));
+                console.log(values);
+                dispatch(EditCourse(formData))
+                    .then(result => {
+                        message.success("Success");
+                        history("/courses");
+                    })
+                    .catch(ex => {
+                        console.log(ex);
+                        const { errors } = ex;
+                        Object.entries(errors).forEach(([key, values]) => {
+                            let message = '';
+                            values.forEach(text => message += text + " ");
+                            formikRef.current.setFieldError(key, message);
+                        });
+                        setInvalid(errors.invalid);
+                        titleRef.current.scrollIntoView({ behavior: 'smooth' })
+                        message.error("Error");
+                    });
+            },
+            onCancel() {},
+          });
     }
     useEffect(() => {
         try {
@@ -59,7 +70,7 @@ const EditCoursePage = () => {
                     formikRef.current.setFieldValue("description", data.description);
                     formikRef.current.setFieldValue("duration", data.duration);
                     formikRef.current.setFieldValue("startcourse", data.startCourse);
-                    setImagePath("https://localhost:44315" + data.photo);
+                    setImagePath(LOCAL_HOST + data.photo);
                 })
         }
         catch (error) {
@@ -69,7 +80,7 @@ const EditCoursePage = () => {
 
     return (
         <div className="row">
-            <h1 ref={titleRef} className="text-center">Edit Student</h1>
+            <h1 ref={titleRef} className="text-center">Edit Course</h1>
             {
                 invalid && invalid.length > 0 &&
                 <div className="alert alert-danger">

@@ -3,9 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { CourseDelete, CreateCourse } from '../../actions/course';
 import { CourseAll, PaggingCourses } from '../../actions/pagination';
-import { Pagination, Table, Tag, Space, Input } from 'antd';
+import { Pagination, Table, Tag, Space, Input, Modal, message } from 'antd';
+import { LOCAL_HOST } from '../../../constants/actionTypes';
 import 'antd/dist/antd.css';
 import EclipseWidget from '../eclipse/index';
+
 
 const CoursePage = () => {
     const dispatch = useDispatch();
@@ -20,13 +22,14 @@ const CoursePage = () => {
     const [searchText, setSearchText] = useState("");
 
     const { Search } = Input;
+    const { confirm } = Modal;
 
     const columns = [
         { title: 'Id',           dataIndex: 'id',           key: 'id', sorter: true},
         { title: 'Name',         dataIndex: 'name',         key: 'name', sorter: true, render: text => <a>{text}</a>, },
         { title: 'Description',  dataIndex: 'description',  key: 'description',  render: text => <a>{text}</a>,},
         { title: 'Duration',     dataIndex: 'duration',     key: 'duration'},
-        { title: 'Photo',        dataIndex: 'photo',        key: 'photo',    render: text => <img src={"https://localhost:44315"+text} alt="Самогон" width="100" />, },
+        { title: 'Photo',        dataIndex: 'photo',        key: 'photo',    render: text => <img src={LOCAL_HOST + text} alt="Самогон" width="100" />, },
         { title: 'Delete',       dataIndex: '',             key: 'delete',   render: id => <button type="button" onClick={() => onDeleteClick(id.id)} className="btn btn-danger">Delete</button>,},
         { title: 'Edit',         dataIndex: '',             key: 'edit',   render: id => <Link className="btn btn-warning" to={`/course/edit/${id.id}`}>Edit</Link>,},
     ]
@@ -120,16 +123,25 @@ const CoursePage = () => {
     }, [])
 
     const onDeleteClick = (id) => {
-        try 
-        {
-            dispatch(CourseDelete(id))
-            .then(res => {setLoading(false)})
-            .catch(res => {setLoading(false)});
-        } 
-        catch (error) 
-        {
-
-        }
+        confirm({
+            title: 'Delete course?',
+            content: 'Do you want to delete this course?',
+            onOk() {
+                try {
+                    dispatch(CourseDelete(id))
+                        .then(res => { 
+                            setLoading(false);
+                            message.success('Course deleted successfully :)');
+                         })
+                        .catch(res => { 
+                            setLoading(false);
+                            message.error('Something went wrong :(');
+                         });
+                }
+                catch (error) { message.error('Something went wrong :(');}
+            },
+            onCancel() {},
+          });
     }
 
     return (

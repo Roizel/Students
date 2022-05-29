@@ -7,10 +7,17 @@ import { PaggingStudents } from '../../../actions/pagination';
 import 'antd/dist/antd.css';
 import { Pagination, Table, Tag, Space, Input } from 'antd';
 import EclipseWidget from '../../eclipse/index';
+import { Modal, message } from 'antd';
+import { LOCAL_HOST } from '../../../../constants/actionTypes';
+import { useNavigate } from 'react-router';
+
 
 const StudentPage = () => {
     const dispatch = useDispatch();
+    const history = useNavigate();
     const { Search } = Input;
+    const { confirm } = Modal;
+    const { isAuth, user, isAdmin } = useSelector(redux => redux.auth);
 
     const [typeOfSort, setTypeOfSort] = useState("");
     const [pageSize, setPageSize] = useState(10);
@@ -99,7 +106,7 @@ const StudentPage = () => {
         { title: 'Email', dataIndex: 'email', key: 'email', },
         { title: 'Phone', dataIndex: 'phone', key: 'phone', },
         { title: 'Age', dataIndex: 'age', key: 'age', sorter: true },
-        { title: 'Image', dataIndex: 'photo', key: 'photo', render: text => <img src={"https://localhost:44315/images/" + text} alt="Самогон" width="100" />, },
+        { title: 'Image', dataIndex: 'photo', key: 'photo', render: text => <img src={LOCAL_HOST + "/images/" + text} alt="Самогон" width="100" />, },
         { title: 'Delete', dataIndex: '', key: 'delete', render: id => <button type="button" onClick={() => onDeleteClick(id.id)} className="btn btn-danger">Delete</button>, },
         { title: 'Edit', dataIndex: '', key: 'edit', render: id => <Link className="btn btn-warning" to={`/student/edit/${id.id}`}>Edit</Link>, },
     ]
@@ -125,25 +132,36 @@ const StudentPage = () => {
                 .catch(res => { setLoading(false) })
         }
         catch (error) {
-            console.log("Server error global");
+            message.error("Server error global");
         }
     }, [])
 
     const onDeleteClick = (id) => {
-        try {
-            dispatch(StudentDelete(id))
-                .then(res => { setLoading(false) })
-                .catch(res => { setLoading(false) });
-        } catch (error) {
-
-        }
+        confirm({
+            title: 'Delete User?',
+            content: 'Do you want to delete this user?',
+            onOk() {
+                try {
+                    dispatch(StudentDelete(id))
+                        .then(res => {
+                            setLoading(false);
+                            message.success('Student deleted successfully :)');
+                        })
+                        .catch(res => {
+                            setLoading(false);
+                            message.error('Something went wrong :(');
+                        });
+                }
+                catch (error) { message.error('Something went wrong :('); }
+            },
+            onCancel() { },
+        });
     }
 
     const ShowStudentSubscribes = (record) => {
         let course = '';
         for (let index = 0; index < studentsCourses.length; index++) {
-            if(record.id == studentsCourses[index].id)
-            {
+            if (record.id == studentsCourses[index].id) {
                 course += `${studentsCourses[index].name} \n`;
             }
         }
@@ -153,8 +171,7 @@ const StudentPage = () => {
     const IsStudentsHasSubscribes = (record) => {
         let id = 0
         for (let index = 0; index < studentsCourses.length; index++) {
-            if(record.id == studentsCourses[index].id)
-            {
+            if (record.id == studentsCourses[index].id) {
                 id = studentsCourses[index].id
             }
         }
@@ -178,20 +195,20 @@ const StudentPage = () => {
                 onChange={Sort}
                 rowKey={(record) => { return record.id }}
                 expandable={{
-                    expandedRowRender: (record) => 
+                    expandedRowRender: (record) =>
                     (
-                         <div style={{ whiteSpace: 'pre-line' }}>{ShowStudentSubscribes(record)}</div>
+                        <div style={{ whiteSpace: 'pre-line' }}>{ShowStudentSubscribes(record)}</div>
                     ),
                     rowExpandable: (record) => record.id == IsStudentsHasSubscribes(record),
                 }}
             />
-          <Pagination 
-            defaultCurrent={1} 
-            total={totalPages}
-            showSizeChanger
-            showTotal={total => `Total ${totalPages} items`}
-            onChange={(page, pageSize) => Pag(page, pageSize)} 
-        />
+            <Pagination
+                defaultCurrent={1}
+                total={totalPages}
+                showSizeChanger
+                showTotal={total => `Total ${totalPages} items`}
+                onChange={(page, pageSize) => Pag(page, pageSize)}
+            />
         </div>
     )
 }
